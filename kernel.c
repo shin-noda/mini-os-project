@@ -7,13 +7,6 @@ typedef uint32_t size_t;
 
 extern char __bss[], __bss_end[], __stack_top[];
 
-void *memset(void *buf, char c, size_t n) {
-    uint8_t *p = (uint8_t *) buf;
-    while (n--)
-        *p++ = c;
-    return buf;
-}
-
 struct sbiret sbi_call(long arg0, long arg1, long arg2, long arg3, long arg4,
 					   long arg5, long fid, long eid) {
 
@@ -42,12 +35,10 @@ void putchar(char ch) {
 }
 
 void kernel_main(void) {
-	printf("\n\nHello %s\n", "World!");
-	printf("1 + 2 = %d, %x\n", 1 + 2, 0x1234abcd);
-	
-	for (;;) {
-		__asm__ __volatile__("wfi");
-	}
+	memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
+
+	PANIC("booted!");
+	printf("unreachable here!\n");
 }
 
 __attribute__((section(".text.boot")))
